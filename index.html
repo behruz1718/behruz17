@@ -1,290 +1,88 @@
-<button class="calc-btn" onclick="calcNum('1')">1</button>
-                <button class="calc-btn" onclick="calcNum('2')">2</button>
-                <button class="calc-btn" onclick="calcNum('3')">3</button>
-                <button class="calc-btn" onclick="calcNum('0')">0</button>
-                
-                <button class="calc-btn eq" onclick="calcEquals()">= (Ҳисоблаш)</button>
-                <button class="calc-btn op" style="background: #2563eb;" onclick="useCalcResult()">Формага юбориш</button>
-            </div>
-        </div>
-
-        <!-- Qo'lda kiritish -->
-        <div class="add-form">
-            <input type="text" id="itemName" placeholder="Номи (масалан: Нон, Гўшт, Такси)">
-            <div class="input-row">
-                <input type="number" id="itemAmount" placeholder="Суммаси (масалан: 15000)">
-                <button class="btn-add" id="addBtn">Қўшиш</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Ro'yxat va Filtrlash -->
-    <div class="card">
-        <div class="filter-section">
-            <span style="font-weight: 600; font-size: 0.9rem;">Харажатлар рўйхати:</span>
-            <select id="monthFilter">
-                <option value="0">Январь</option>
-                <option value="1">Февраль</option>
-                <option value="2">Март</option>
-                <option value="3">Апрель</option>
-                <option value="4">Май</option>
-                <option value="5">Июнь</option>
-                <option value="6">Июль</option>
-                <option value="7">Август</option>
-                <option value="8">Сентябрь</option>
-                <option value="9">Октябрь</option>
-                <option value="10">Ноябрь</option>
-                <option value="11">Декабрь</option>
-            </select>
-        </div>
-
-        <ul class="expense-list" id="expenseList"></ul>
-
-        <button class="btn-clear-all" id="clearAllBtn">Барча маълумотларни ўчириш</button>
-    </div>
-
+<!doctype html>
+<html lang="uz-Cyrl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Галсавой — Ҳисоб-китоб</title>
+<style>
+:root{--bg:#0b1020;--panel:#141c30;--panel2:#1a2540;--line:#293653;--text:#eef3ff;--muted:#9eacc8;--accent:#70e1c1;--blue:#8ba7ff;--red:#ff8f9b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,#1c2b4a 0,transparent 35%),var(--bg);color:var(--text);font-family:Inter,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.brand{display:flex;gap:13px;align-items:center}.logo{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--accent),#668cff);display:grid;place-items:center;color:#081326;font-size:24px;font-weight:900;box-shadow:0 8px 30px #70e1c133}
+h1{font-size:25px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px}.today{color:var(--muted);background:#ffffff08;border:1px solid var(--line);padding:10px 14px;border-radius:12px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:18px}.stat,.panel{background:linear-gradient(145deg,#17213a,#11182b);border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 30px #0002}
+.stat{padding:18px}.stat-label{font-size:13px;color:var(--muted);margin-bottom:10px}.stat-value{font-size:clamp(19px,3vw,28px);font-weight:800;overflow-wrap:anywhere}.stat:nth-child(1) .stat-value{color:var(--accent)}.stat:nth-child(2) .stat-value{color:var(--blue)}.stat:nth-child(3) .stat-value{color:#ffd28a}
+.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:18px}.panel{padding:20px;margin-bottom:18px}.panel h2{font-size:17px;margin:0 0 16px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}label{font-size:12px;color:var(--muted)}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;background:#0d1426;color:var(--text);padding:12px;font:inherit;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--accent)}button{border:0;border-radius:11px;padding:11px 14px;font-weight:700;cursor:pointer;transition:.15s}button:hover{transform:translateY(-1px);filter:brightness(1.08)}.primary{background:var(--accent);color:#09201d}.secondary{background:#253454;color:var(--text);border:1px solid #354565}.danger{background:#3a202f;color:#ffb2bd;border:1px solid #693444}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.toolbar select{max-width:180px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:540px}th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #293653;font-size:13px}th{color:var(--muted);font-weight:600}td.amount{font-weight:800;color:var(--accent);white-space:nowrap}.empty{text-align:center;color:var(--muted);padding:26px}.mini{font-size:11px;color:var(--muted)}.actions{display:flex;gap:6px}.actions button{padding:7px 9px;font-size:12px}.monthtotal{margin-left:auto;color:var(--muted);font-size:13px}.calc{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.calcdisplay{grid-column:1/-1;text-align:right;font-size:25px;font-weight:700;padding:16px}.calc button{font-size:17px;padding:15px 6px;background:#202c47;color:var(--text)}.calc button.op{color:var(--accent)}.calc button.eq{background:var(--accent);color:#09201d}.calc button.clear{color:#ffb2bd}.foot{text-align:center;color:#71809e;font-size:12px;padding:12px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.wrap{padding:14px}.panel{padding:15px}.stat{padding:15px}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="brand"><div class="logo">₮</div><div><h1>Галсавой ҳисоб-китоб</h1><div class="sub">Расходларингизни тартиб билан ҳисобланг</div></div></div><div class="today" id="today"></div></header>
+<section class="cards">
+<div class="stat"><div class="stat-label">Бугунги расход</div><div class="stat-value" id="todayTotal">0 сўм</div></div>
+<div class="stat"><div class="stat-label">Танланган ой расходи</div><div class="stat-value" id="monthTotal">0 сўм</div></div>
+<div class="stat"><div class="stat-label">Жами барча расходлар</div><div class="stat-value" id="allTotal">0 сўм</div></div>
+</section>
+<div class="layout"><main>
+<section class="panel"><h2>＋ Янги расход қўшиш</h2>
+<form id="expenseForm"><div class="formgrid">
+<div class="field full"><label for="title">Нима олдингиз ёки нимага пул кетди?</label><input id="title" required maxlength="100" placeholder="Масалан: ун, ёғ, йўл харажати"></div>
+<div class="field"><label for="amount">Сумма (сўм)</label><input id="amount" type="number" min="0.01" step="any" required placeholder="0"></div>
+<div class="field"><label for="date">Сана</label><input id="date" type="date" required></div>
+<div class="field full"><label for="note">Изоҳ (ихтиёрий)</label><input id="note" maxlength="180" placeholder="Қўшимча маълумот"></div>
+<div class="field full"><button class="primary" type="submit">Сақлаш</button></div>
+</div></form><p class="mini">Маълумотлар шу браузерда автоматик сақланади — саҳифани ёпиб очсангиз ҳам қолади.</p>
+</section>
+<section class="panel"><div class="toolbar"><h2 style="margin:0">📒 Расходлар тарихи</h2><span class="monthtotal" id="monthCount"></span></div>
+<div class="toolbar"><label for="monthFilter">Ойни танланг:</label><select id="monthFilter"></select><button class="secondary" id="thisMonth">Жорий ой</button><button class="secondary" id="export">Excel/CSV юклаш</button></div>
+<div class="tablewrap"><table><thead><tr><th>Сана</th><th>Нимага</th><th>Изоҳ</th><th>Сумма</th><th>Амал</th></tr></thead><tbody id="rows"></tbody></table></div>
+</section>
+</main><aside>
+<section class="panel"><h2>🧮 Калькулятор</h2><div class="calc"><input class="calcdisplay" id="calcDisplay" value="0" aria-label="Калькулятор" readonly>
+<button class="clear" data-c="C">C</button><button data-c="(">(</button><button data-c=")">)</button><button class="op" data-c="/">÷</button>
+<button data-c="7">7</button><button data-c="8">8</button><button data-c="9">9</button><button class="op" data-c="*">×</button>
+<button data-c="4">4</button><button data-c="5">5</button><button data-c="6">6</button><button class="op" data-c="-">−</button>
+<button data-c="1">1</button><button data-c="2">2</button><button data-c="3">3</button><button class="op" data-c="+">+</button>
+<button data-c="0">0</button><button data-c=".">.</button><button data-c="back">⌫</button><button class="eq" data-c="=">=</button>
+</div><p class="mini">Қўшиш, айириш, бўлиш ва кўпайтириш амаллари.</p></section>
+<section class="panel"><h2>🗂️ Ойлик ҳисобот</h2><div id="monthlyReport" class="mini" style="line-height:2"></div><button class="danger" id="clearAll" style="width:100%;margin-top:14px">Барча маълумотни ўчириш</button><p class="mini">Ўчиришдан олдин тасдиқ сўралади.</p></section>
+</aside></div><div class="foot">Галсавой ҳисоб-китоб · Маълумотлар фақат ушбу браузерда сақланади</div>
 </div>
-
 <script>
-    // Ma'lumotlar ombori
-    let expenses = JSON.parse(localStorage.getItem('my_expenses_data')) || [];
-
-    // Oylar nomi
-    const monthNames = [
-        "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-        "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-    ];
-
-    // Elementlar
-    const micBtn = document.getElementById('micBtn');
-    const statusText = document.getElementById('statusText');
-    const itemName = document.getElementById('itemName');
-    const itemAmount = document.getElementById('itemAmount');
-    const addBtn = document.getElementById('addBtn');
-    const expenseList = document.getElementById('expenseList');
-    const todayTotalEl = document.getElementById('todayTotal');
-    const monthTotalEl = document.getElementById('monthTotal');
-    const monthFilter = document.getElementById('monthFilter');
-    const selectedMonthLabel = document.getElementById('selectedMonthLabel');
-    const clearAllBtn = document.getElementById('clearAllBtn');
-
-    // Hozirgi oy va kunni sozlash
-    const currentDate = new Date();
-    monthFilter.value = currentDate.getMonth();
-
-    // ------------------- OVOZNI TANIASH (Speech Recognition) -------------------
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-    let isListening = false;
-
-    if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'uz-UZ'; // O'zbek tili
-        recognition.continuous = false;
-        recognition.interimResults = false;
-
-        recognition.onstart = () => {
-            isListening = true;
-            micBtn.classList.add('listening');
-            statusText.innerText = "Эшитилмоқда... Масалан: 'Нон 5000'";
-        };
-
-        recognition.onend = () => {
-            isListening = false;
-            micBtn.classList.remove('listening');
-            statusText.innerText = "Овозли киритиш учун микрофонни босинг";
-        };
-
-        recognition.onresult = (event) => {
-            const text = event.results[0][0].transcript;
-            statusText.innerText = `Айтилди: "${text}"`;
-            parseAndAddVoiceData(text);
-        };
-
-        recognition.onerror = (e) => {
-            statusText.innerText = "Овозни аниқлаб бўлмади. Қайта урининг ёки ёзиб киритинг.";
-            micBtn.classList.remove('listening');
-            isListening = false;
-        };
-    } else {
-        statusText.innerText = "Браузер ёки веб-кўриш овозли режимни қўллаб-қувватламайди.";
-    }
-
-    micBtn.addEventListener('click', () => {
-        if (!recognition) {
-            alert("Овозли кириш смартфонингиздаги стандарт веб браузер орқали толиқ ишлайди.");
-            return;
-        }
-        if (isListening) {
-            recognition.stop();
-        } else {
-            recognition.start();
-        }
-    });
-
-    // Ovozli matndan nom va summani ajratib olish
-    function parseAndAddVoiceData(text) {
-        const numbers = text.match(/\d+/g);
-        if (!numbers) {
-            alert("Сумма аниқланмади. Илтимос рақам билан айтинг (масалан: Такси 15000)");
-            return;
-        }
-
-        const amount = parseInt(numbers[numbers.length - 1], 10);
-        let title = text.replace(/\d+/g, '').replace(/со'м|сом|сум/gi, '').trim();
-        if (!title) title = "Харажат";
-
-        addExpense(title, amount);
-    }
-
-    // ------------------- KALKULYATOR LOGIKASI -------------------
-    const calcBox = document.getElementById('calcBox');
-    const calcScreen = document.getElementById('calcScreen');
-    const toggleCalcBtn = document.getElementById('toggleCalcBtn');
-
-    toggleCalcBtn.addEventListener('click', () => {
-        calcBox.style.display = calcBox.style.display === 'block' ? 'none' : 'block';
-    });
-
-    function calcNum(num) {
-        if (calcScreen.value === '0') calcScreen.value = num;
-        else calcScreen.value += num;
-    }
-
-    function calcOp(op) {
-        calcScreen.value += ' ' + op + ' ';
-    }
-
-    function calcClear() {
-        calcScreen.value = '0';
-    }
-
-    function calcEquals() {
-        try {
-            calcScreen.value = eval(calcScreen.value.replace(/×/g, '*').replace(/÷/g, '/'));
-        } catch {
-            calcScreen.value = 'Хатолик';
-        }
-    }
-
-    function useCalcResult() {
-        const val = parseFloat(calcScreen.value);
-        if (!isNaN(val) && val > 0) {
-            itemAmount.value = val;
-            calcBox.style.display = 'none';
-        } else {
-            alert("Тўғри сумма чиқарилмаган!");
-        }
-    }
-
-    // ------------------- XARAJATLARNI BOSHQARISH -------------------
-    addBtn.addEventListener('click', () => {
-        const name = itemName.value.trim();
-        const amount = parseFloat(itemAmount.value);
-
-        if (!name) {
-            alert("Илтимос харажат номини киритинг!");
-            return;
-        }
-        if (isNaN(amount) || amount <= 0) {
-            alert("Илтимос тўғри сумма киритинг!");
-            return;
-        }
-
-        addExpense(name, amount);
-        itemName.value = '';
-        itemAmount.value = '';
-    });
-
-    function addExpense(title, amount) {
-        const now = new Date();
-        const item = {
-            id: Date.now(),
-            title: title,
-            amount: amount,
-            dateStr: now.toISOString(), // Izchil vaqt formati
-            day: now.getDate(),
-            month: now.getMonth(),
-            year: now.getFullYear()
-        };
-
-        expenses.unshift(item);
-        saveAndRender();
-    }
-
-    function deleteExpense(id) {
-        expenses = expenses.filter(item => item.id !== id);
-        saveAndRender();
-    }
-
-    clearAllBtn.addEventListener('click', () => {
-        if (expenses.length === 0) return;
-        if (confirm("Ростдан ҳам барча харажатлар тарихини ўчириб ташламоқчимисиз?")) {
-            expenses = [];
-            saveAndRender();
-        }
-    });
-
-    monthFilter.addEventListener('change', render);
-
-    // ------------------- EKRANGA CHIQARISH VA SAQLASH -------------------
-    function saveAndRender() {
-        localStorage.setItem('my_expenses_data', JSON.stringify(expenses));
-        render();
-    }
-
-    function render() {
-        const selectedMonth = parseInt(monthFilter.value, 10);
-        const currentYear = new Date().getFullYear();
-        const todayDate = new Date().toDateString();
-
-        selectedMonthLabel.innerText = `${monthNames[selectedMonth]} ойлик:`;
-
-        expenseList.innerHTML = '';
-        let todaySum = 0;
-        let monthSum = 0;
-        let count = 0;
-
-        expenses.forEach(item => {
-            const itemDate = new Date(item.dateStr);
-
-            // Bugungi xarajatlar hisobi
-            if (itemDate.toDateString() === todayDate) {
-                todaySum += item.amount;
-            }
-
-            // Tanlangan oy bo'yicha hisob
-            if (item.month === selectedMonth && item.year === currentYear) {
-                monthSum += item.amount;
-                count++;
-
-                const li = document.createElement('li');
-                li.className = 'expense-item';
-                li.innerHTML = `
-                    <div class="item-info">
-                        <span class="item-title">${item.title}</span>
-                        <span class="item-meta">${item.day}-${monthNames[item.month]}, ${itemDate.getHours().toString().padStart(2, '0')}:${itemDate.getMinutes().toString().padStart(2, '0')}</span>
-                    </div>
-                    <div style="display:flex; align-items:center;">
-                        <span class="item-amount">${item.amount.toLocaleString('ru-RU')} сўм</span>
-                        <button class="btn-del" onclick="deleteExpense(${item.id})">✕</button>
-                    </div>
-                `;
-                expenseList.appendChild(li);
-            }
-        });
-
-        if (count === 0) {
-            expenseList.innerHTML = `<div class="empty-msg">${monthNames[selectedMonth]} ойида ҳеч қандай харажат киритилмаган.</div>`;
-        }
-
-        todayTotalEl.innerText = todaySum.toLocaleString('ru-RU') + " сўм";
-        monthTotalEl.innerText = monthSum.toLocaleString('ru-RU') + " сўм";
-    }
-
-    // Ilk yuklanishda render qilish
-    render();
+const KEY='galsavoy_hisob_v1';
+const $=id=>document.getElementById(id);
+const months=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const today=new Date(); const localDate=d=>{let x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)};
+$('today').textContent=today.toLocaleDateString('uz-UZ',{day:'numeric',month:'long',year:'numeric'});
+$('date').value=localDate(today);
+$('monthFilter').innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+$('monthFilter').value=today.getMonth();
+let expenses=load();
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(x)?x:[]}catch{return []}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(expenses));return true}catch(e){alert('Сақлаб бўлмади. Браузер хотираси тўлган бўлиши мумкин.');return false}}
+function money(n){return new Intl.NumberFormat('uz-UZ',{maximumFractionDigits:2}).format(n)+' сўм'}
+function sum(arr){return arr.reduce((s,e)=>s+Number(e.amount||0),0)}
+function selectedMonth(){return Number($('monthFilter').value)}
+function render(){
+ const now=localDate(new Date()), month=selectedMonth(), year=Number(now.slice(0,4));
+ $('todayTotal').textContent=money(sum(expenses.filter(e=>e.date===now)));
+ const chosen=expenses.filter(e=>{const d=e.date||'';return Number(d.slice(5,7))===month+1&&Number(d.slice(0,4))===year});
+ $('monthTotal').textContent=money(sum(chosen)); $('allTotal').textContent=money(sum(expenses));
+ $('monthCount').textContent=`${chosen.length} та ёзув · ${money(sum(chosen))}`;
+ const filtered=expenses.filter(e=>{const d=e.date||'';return Number(d.slice(5,7))===month+1&&Number(d.slice(0,4))===year}).sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created);
+ $('rows').innerHTML=filtered.length?filtered.map(e=>`<tr><td>${esc(e.date)}</td><td><b>${esc(e.title)}</b></td><td>${esc(e.note||'—')}</td><td class="amount">${money(Number(e.amount))}</td><td><div class="actions"><button class="danger" data-delete="${e.id}">Ўчириш</button></div></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Бу ойда ҳали расход киритилмаган.</td></tr>`;
+ $('monthlyReport').innerHTML=months.map((m,i)=>{let list=expenses.filter(e=>Number((e.date||'').slice(5,7))===i+1&&Number((e.date||'').slice(0,4))===year);return `<div style="display:flex;justify-content:space-between;gap:10px"><span>${m}</span><b>${money(sum(list))}</b></div>`}).join('');
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('expenseForm').addEventListener('submit',e=>{e.preventDefault();const amount=Number($('amount').value);if(!Number.isFinite(amount)||amount<=0)return alert('Суммани тўғри киритинг.');expenses.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),title:$('title').value.trim(),amount,date:$('date').value,note:$('note').value.trim(),created:Date.now()});if(persist()){const d=$('date').value;$('monthFilter').value=Number(d.slice(5,7))-1; e.target.reset();$('date').value=localDate(today);render()}});
+$('rows').addEventListener('click',e=>{const id=e.target.dataset.delete;if(!id)return;if(confirm('Шу расходни ўчирайми?')){expenses=expenses.filter(x=>x.id!==id);persist();render()}});
+$('monthFilter').addEventListener('change',render);$('thisMonth').onclick=()=>{$('monthFilter').value=today.getMonth();render()};
+$('clearAll').onclick=()=>{if(confirm('Ҳақиқатан ҳам барча расходларни ўчирмоқчимисиз? Бу амални қайтариб бўлмайди.')){expenses=[];persist();render()}};
+$('export').onclick=()=>{const data=[['Сана','Расход','Изоҳ','Сумма'],...expenses.map(e=>[e.date,e.title,e.note,e.amount])];const csv='\ufeff'+data.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='galsavoy-hisobot.csv';a.click();URL.revokeObjectURL(a.href)};
+let expr='',fresh=true;const display=$('calcDisplay');
+document.querySelector('.calc').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const c=b.dataset.c;if(c==='C'){expr='';display.value='0';fresh=true;return}if(c==='back'){expr=expr.slice(0,-1);display.value=expr||'0';return}if(c==='='){try{if(!expr||!/^[0-9+\-*/().\s]+$/.test(expr))throw 0;const result=Function('"use strict";return ('+expr+')')();if(!Number.isFinite(result))throw 0;expr=String(Math.round((result+Number.EPSILON)*1e8)/1e8);display.value=expr;fresh=true}catch{display.value='Хато';expr='';fresh=true}return}if(fresh&&/[0-9.]/.test(c)&&!['(',')'].includes(c))expr='';fresh=false;expr+=c;display.value=expr});
+render();
 </script>
-
 </body>
 </html>
